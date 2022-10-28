@@ -12,8 +12,8 @@ export default function LotteryEntrance() {
 
     const dispatch = useNotification()
 
-    const [storeValue, setStoreValue] = useState("0")
-    const [numPlayers, setNumPlayers] = useState("0")
+    console.log("lottery address", lotteryAddress)
+    const [retrieveValue, setRetrieveValue] = useState("0")
 
     const {
         runContractFunction: store,
@@ -24,31 +24,24 @@ export default function LotteryEntrance() {
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "store",
-        msgValue: 0,
+        msgValue: 12,
         params: {},
     })
 
     /* View Functions */
 
-    const { runContractFunction: retrieve } = useWeb3Contract({
+    const { runContractFunction: getStoreValue } = useWeb3Contract({
         abi: abi,
         contractAddress: lotteryAddress, // specify the networkId
         functionName: "retrieve",
         params: {},
     })
 
-    const { runContractFunction: showPlayers } = useWeb3Contract({
-        abi: abi,
-        contractAddress: lotteryAddress, // specify the networkId
-        functionName: "showPlayers",
-        params: {},
-    })
-
     async function updateUIValues() {
-        const numPlayersFromCall = (await showPlayers()).toString()
-        const retriveStoreValue = (await retrieve()).toString()
-        setNumPlayers(numPlayersFromCall)
-        setStoreValue(retriveStoreValue)
+        const v = await getStoreValue()
+        console.log("store value", v)
+        const sv = v.toString()
+        setRetrieveValue(sv)
     }
 
     useEffect(() => {
@@ -79,8 +72,8 @@ export default function LotteryEntrance() {
 
     return (
         <div className="p-5">
-            <h1 className="py-4 px-4 font-bold text-3xl">Lottery</h1>
-            {raffleAddress ? (
+            <h1 className="py-4 px-4 font-bold text-3xl"></h1>
+            {lotteryAddress ? (
                 <>
                     <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto"
@@ -98,8 +91,8 @@ export default function LotteryEntrance() {
                             "Enter Lottery"
                         )}
                     </button>
-                    <div>store value: {storeValue} USDT</div>
-                    <div>The current number of players is: {numPlayers}</div>
+                    {/* <div>store value: {storeValue} USDT</div> */}
+                    <div>store value: {retrieveValue}</div>
                 </>
             ) : (
                 <div>Please connect to a supported chain </div>
